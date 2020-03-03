@@ -61,7 +61,7 @@ class Socket:
     def connect(self, remote):
         self.remote = remote
         self.ostream = Ostream()
-
+        
         pkt = self.ostream.makeNextPacket(connId=0, payload=b"", isSyn=True)
         self._send(pkt)
 
