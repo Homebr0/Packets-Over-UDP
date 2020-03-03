@@ -41,7 +41,7 @@ class Ostream:
             seqNum = 0
         pkt = Packet(seqNum = 0, connId = connId, isSyn = isSyn, isFin = isFin, payload = payload)
         seqNum += 1
-        return pkt.encode()        
+        return pkt     
 
     def hasBufferedData(self):
         ###
