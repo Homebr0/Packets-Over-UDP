@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7b7e08d8-bdbc-4fe2-bfda-aeb808e10957" name="Default Changelist" comment="" />
+    <list default="true" id="7b7e08d8-bdbc-4fe2-bfda-aeb808e10957" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/confundo/ostream.py" beforeDir="false" afterPath="$PROJECT_DIR$/confundo/ostream.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -34,6 +37,10 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
+    <state x="668" y="349" key="com.intellij.ide.util.TipDialog" timestamp="1583271146074">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="668" y="349" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1583271146074" />
     <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1583267557127">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

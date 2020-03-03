@@ -37,10 +37,9 @@ class Ostream:
         pass
 
     def makeNextPacket(self, connId, payload, isSyn=False, isFin=False, **kwargs):
-        ###
-        ### IMPLEMENT
-        ###
-        pass
+        packet = Packet(seqNum= self.seqNum, connId = connId, payload= payload, isSyn = isSyn, isFin= isFin)
+        self.seqNum += 1
+        return packet
 
     def hasBufferedData(self):
         ###
