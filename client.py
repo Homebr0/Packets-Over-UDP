@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import sys
 import argparse
 import socket
@@ -31,13 +29,13 @@ conn.connect(sockaddr)
 
 while True:
     try:
-        print("Receiving from socket")
+
         (inPacket, fromAddr) = sock.recvfrom(1024)
         # Note in the above, parameter to .recvfrom should be at least MTU+12 (524), but can be anything else larger if we are willing to accept larger packets
-        print ("processing packet")
+
         # Process incoming packet
         conn.on_receive(inPacket)
-        print("processing retransmission")
+
         # Process any retransmissions
         conn.process_retransmissions()
 
@@ -51,13 +49,14 @@ while True:
         if conn.isClosed():
             break
 
-    while file and conn.canSendData():
+    if file and conn.canSendData():
 
         data = file.read(confundo.MTU)
         if not data:
+            print("No data")
             file = None
-            break
-        print("sending file data")
+            pass
+
         conn.send(data)
 
     if not file and conn.canSendData():

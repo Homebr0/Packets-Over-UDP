@@ -1,6 +1,7 @@
 # -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 import sys
+import sys
 import time
 
 from .common import *
@@ -20,6 +21,7 @@ class Socket:
         self.istream = None
         self.ostream = None
         self.closing = False
+        self.closeTime = 0
         self.closingActReceived = False
 
     def format_line(self, command, pkt):
@@ -48,21 +50,21 @@ class Socket:
         self.ostream.seqNum = temp
 
         if self.closing:
-                if pkt.isAck and not pkt.isFin and not pkt.isSyn: #Expect packet with ACK flag
-                    self.ostream.state = State.FIN_WAIT
-                    self.closingAckReceived = True
-                elif pkt.isFin and self.closingAckReceived: #
-                    newPkt = self.ostream.makeNextPacket(self.connId, payload = b'', isAck=True)
-                    self._send(newPkt)
-                elif not pkt.isAck:
-                    print("ERROR: ACK Flag Expected")
-                else:
-                    pass #drop any other non-FIN packet
+            if pkt.isAck and not pkt.isFin and not pkt.isSyn:  # Expect packet with ACK flag
+                self.ostream.state = State.FIN_WAIT
+                self.closingAckReceived = True
+                return None
+            elif pkt.isFin and self.closingAckReceived:  #
+                newPkt = self.ostream.makeNextPacket(self.connId, payload=b'', isAck=True)
+                self._send(newPkt)
+            elif not pkt.isAck:
+                print("ERROR: ACK Flag Expected")
+            else:
+                pass  # drop any other non-FIN packet
 
         if pkt.isSyn and pkt.isAck:
             print("SYN-ACK received")
             self.connId = pkt.connId
-
 
     def process_retransmissions(self):
 
@@ -98,8 +100,11 @@ class Socket:
         if not self.closing:
             pkt = self.ostream.makeNextPacket(self.connId, payload=b"", isFin=True)
             self._send(pkt)
+            self.closeTime = time.time()
         self.closing = True
-
+        if 2 <= (time.time() - self.closeTime):
+            exit(0)
+            return True
 
     def isClosed(self):
         return self.ostream.state == State.CLOSED
