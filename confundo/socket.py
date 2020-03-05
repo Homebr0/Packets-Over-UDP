@@ -40,13 +40,6 @@ class Socket:
         '''Method that dispatches the received packet'''
         pkt = Packet().decode(buf)
         print(self.format_line("RECV", pkt))
-<<<<<<< HEAD
-        
-        self.ostream.ack(pkt.ackNum, pkt.connId)
-        ###
-        ### IMPLEMENT
-        ###
-=======
 
         self.ostream.ack(pkt.ackNum, pkt.connId)
 
@@ -69,7 +62,6 @@ class Socket:
             self.ostream.ackNum = pkt.seqNum + 1
             self.ostream.seqNum = temp
 
->>>>>>> eddb9dc2a9df655533a3de5bc0f78eb2a2af00d5
 
     def process_retransmissions(self):
 
@@ -89,13 +81,8 @@ class Socket:
 
     def connect(self, remote):
         self.remote = remote
-<<<<<<< HEAD
         self.ostream = Ostream(base = 42)
         
-=======
-        self.ostream = Ostream(base=42)
-
->>>>>>> eddb9dc2a9df655533a3de5bc0f78eb2a2af00d5
         pkt = self.ostream.makeNextPacket(connId=0, payload=b"", isSyn=True)
         self._send(pkt)
 
