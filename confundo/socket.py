@@ -43,6 +43,10 @@ class Socket:
 
         self.ostream.ack(pkt.ackNum, pkt.connId)
 
+        temp = pkt.ackNum
+        self.ostream.ackNum = pkt.seqNum + 1
+        self.ostream.seqNum = temp
+
         if self.closing:
                 if pkt.isAck and not pkt.isFin and not pkt.isSyn: #Expect packet with ACK flag
                     self.ostream.state = State.FIN_WAIT
@@ -58,9 +62,6 @@ class Socket:
         if pkt.isSyn and pkt.isAck:
             print("SYN-ACK received")
             self.connId = pkt.connId
-            temp = pkt.ackNum
-            self.ostream.ackNum = pkt.seqNum + 1
-            self.ostream.seqNum = temp
 
 
     def process_retransmissions(self):
