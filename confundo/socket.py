@@ -36,7 +36,7 @@ class Socket:
         '''Method that dispatches the received packet'''
         pkt = Packet().decode(buf)
         print(self.format_line("RECV", pkt))
-
+        ostream.ack()
         ###
         ### IMPLEMENT
         ###
@@ -52,9 +52,8 @@ class Socket:
     def on_timeout(self):
         '''Called every 0.5 seconds if nothing received'''
 
-        ###
-        ### IMPLEMENT
-        ###
+        if ostream.on_timeout():
+            return True
 
         return False
 

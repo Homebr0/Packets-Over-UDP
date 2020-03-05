@@ -31,9 +31,7 @@ class Ostream:
         if self.state == State.INVALID:
             return None
 
-        ###
-        ### IMPLEMENT
-        ###
+        self.lastAckTime = time.time()
         pass
 
     def makeNextPacket(self, connId, payload, isSyn=False, isFin=False, **kwargs):
@@ -53,9 +51,8 @@ class Ostream:
         pass
 
     def on_timeout(self, connId):
-        ###
-        ### IMPLEMENT
-        ###
+        if 10 <= (time.time() - self.lastAckTime):
+            return True
         return None
 
     def canSendData(self):
