@@ -20,6 +20,7 @@ class Socket:
         self.istream = None
         self.ostream = None
         self.closing = False
+        self.closeTime = 0
         self.closingActReceived = False
 
     def format_line(self, command, pkt):
@@ -51,6 +52,11 @@ class Socket:
                 if pkt.isAck and not pkt.isFin and not pkt.isSyn: #Expect packet with ACK flag
                     self.ostream.state = State.FIN_WAIT
                     self.closingAckReceived = True
+                    if 2 <= (time.time() - self.closeTime):
+                        print("closing????")
+                        exit(0)
+                        return True
+                    return None
                 elif pkt.isFin and self.closingAckReceived: #
                     newPkt = self.ostream.makeNextPacket(self.connId, payload = b'', isAck=True)
                     self._send(newPkt)
@@ -62,10 +68,14 @@ class Socket:
         if pkt.isSyn and pkt.isAck:
             print("SYN-ACK received")
             self.connId = pkt.connId
+        
+
+            
 
 
     def process_retransmissions(self):
 
+        
         ###
         ### IMPLEMENT
         ###
@@ -98,6 +108,8 @@ class Socket:
         if not self.closing:
             pkt = self.ostream.makeNextPacket(self.connId, payload=b"", isFin=True)
             self._send(pkt)
+            print("closetime set")
+            self.closeTime = time.time()
         self.closing = True
 
 
