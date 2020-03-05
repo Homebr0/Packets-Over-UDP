@@ -8,6 +8,7 @@ from enum import Enum
 import time
 import sys
 
+
 class State(Enum):
     INVALID = 0
     SYN = 1
@@ -17,31 +18,32 @@ class State(Enum):
     CLOSED = 20
     ERROR = 21
 
+
 class Ostream:
-    def __init__(self, base = 12345, isOpening = True):
+    def __init__(self, base=12345, isOpening=True):
         self.base = base
         self.seqNum = base
-        self.lastAckTime = time.time() # last time ACK was sent / activity timer
+        self.lastAckTime = time.time()  # last time ACK was sent / activity timer
         self.cc = CwndControl()
         self.buf = b""
         self.state = State.INVALID
         self.nDupAcks = 0
+        self.ackNum = 0
 
     def ack(self, ackNo, connId):
         if self.state == State.INVALID:
-            print ("state is invalid")
+            print("state is invalid")
             return None
 
         self.lastAckTime = time.time()
         pass
 
-    def makeNextPacket(self, connId, payload, isSyn=False, isFin=False, **kwargs):
+    def makeNextPacket(self, connId, payload, isSyn=False, isFin=False, isAck = False, **kwargs):
         if self.seqNum == MAX_SEQNO:
             self.seqNum = 0
-        pkt = Packet(seqNum = self.seqNum, connId = connId, isSyn = isSyn, isFin = isFin, payload = payload)
+        pkt = Packet(seqNum=self.seqNum, ackNum = self.ackNum, connId=connId, isSyn=isSyn, isFin=isFin, payload=payload, isAck = isAck)
         self.state = State.OPEN
-        self.seqNum += 1
-        return pkt     
+        return pkt
 
     def hasBufferedData(self):
         ###
@@ -65,7 +67,6 @@ class Ostream:
             return True
         else:
             return False
-        
 
     def canSendNewData(self):
         if self.state == State.OPEN:

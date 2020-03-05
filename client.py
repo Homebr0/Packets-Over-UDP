@@ -34,7 +34,11 @@ while True:
         print("Receiving from socket")
         (inPacket, fromAddr) = sock.recvfrom(1024)
         # Note in the above, parameter to .recvfrom should be at least MTU+12 (524), but can be anything else larger if we are willing to accept larger packets
+<<<<<<< HEAD
         print ("prcessing packet")
+=======
+        print ("processing packet")
+>>>>>>> eddb9dc2a9df655533a3de5bc0f78eb2a2af00d5
         # Process incoming packet
         conn.on_receive(inPacket)
         print("processing retransmission")
@@ -61,4 +65,5 @@ while True:
         conn.send(data)
 
     if not file and conn.canSendData():
+        print("Connection closing")
         conn.close()
