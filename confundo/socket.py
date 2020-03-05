@@ -8,6 +8,7 @@ from .istream import Istream
 from .ostream import Ostream, State
 from .packet import Packet
 
+
 class Socket:
     '''Incomplete socket abstraction for Confundo protocol'''
 
@@ -37,6 +38,7 @@ class Socket:
         pkt = Packet().decode(buf)
         print(self.format_line("RECV", pkt))
 
+        self.ostream.ack(pkt.ackNum, pkt.connId)
         ###
         ### IMPLEMENT
         ###
@@ -49,16 +51,17 @@ class Socket:
 
         pass
 
-    #Resend packet
     def on_timeout(self):
         '''Called every 0.5 seconds if nothing received'''
 
+        if self.ostream.on_timeout(self.connId):
+            return True
 
         return False
 
     def connect(self, remote):
         self.remote = remote
-        self.ostream = Ostream()
+        self.ostream = Ostream(base=42)
 
         pkt = self.ostream.makeNextPacket(connId=0, payload=b"", isSyn=True)
         self._send(pkt)

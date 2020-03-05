@@ -8,6 +8,7 @@ from enum import Enum
 import time
 import sys
 
+
 class State(Enum):
     INVALID = 0
     SYN = 1
@@ -17,11 +18,12 @@ class State(Enum):
     CLOSED = 20
     ERROR = 21
 
+
 class Ostream:
-    def __init__(self, base = 12345, isOpening = True):
+    def __init__(self, base=12345, isOpening=True):
         self.base = base
-        self.seqNum = 42
-        self.lastAckTime = time.time() # last time ACK was sent / activity timer
+        self.seqNum = base
+        self.lastAckTime = time.time()  # last time ACK was sent / activity timer
         self.cc = CwndControl()
         self.buf = b""
         self.state = State.INVALID
@@ -29,19 +31,19 @@ class Ostream:
 
     def ack(self, ackNo, connId):
         if self.state == State.INVALID:
+            print("state is invalid")
             return None
 
-        ###
-        ### IMPLEMENT
-        ###
+        self.lastAckTime = time.time()
         pass
 
     def makeNextPacket(self, connId, payload, isSyn=False, isFin=False, **kwargs):
-        if(self.seqNum > MAX_SEQNO):
+        if self.seqNum == MAX_SEQNO:
             self.seqNum = 0
-        packet = Packet(seqNum= self.seqNum, connId = connId, payload= payload, isSyn = isSyn, isFin= isFin)
+        pkt = Packet(seqNum=self.seqNum, connId=connId, isSyn=isSyn, isFin=isFin, payload=payload)
+        self.state = State.OPEN
         self.seqNum += 1
-        return packet
+        return pkt
 
     def hasBufferedData(self):
         ###
@@ -56,21 +58,21 @@ class Ostream:
         pass
 
     def on_timeout(self, connId):
-        ###
-        ### IMPLEMENT
-        ###
+        if 10 <= (time.time() - self.lastAckTime):
+            return True
         return None
 
     def canSendData(self):
-        ###
-        ### IMPLEMENT
-        ###
-        pass
+        if self.state == State.OPEN:
+            return True
+        else:
+            return False
 
     def canSendNewData(self):
-        ###
-        ### IMPLEMENT
-        ###
+        if self.state == State.OPEN:
+            return True
+        else:
+            return False
         pass
 
     def __str__(self):
