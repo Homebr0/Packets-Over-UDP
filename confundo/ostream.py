@@ -29,16 +29,18 @@ class Ostream:
 
     def ack(self, ackNo, connId):
         if self.state == State.INVALID:
+            print ("state is invalid")
             return None
 
         self.lastAckTime = time.time()
         pass
 
     def makeNextPacket(self, connId, payload, isSyn=False, isFin=False, **kwargs):
-        if self.seqNum == self.base:
-            seqNum = 0
-        pkt = Packet(seqNum = 0, connId = connId, isSyn = isSyn, isFin = isFin, payload = payload)
-        seqNum += 1
+        if self.seqNum == MAX_SEQNO:
+            self.seqNum = 0
+        pkt = Packet(seqNum = self.seqNum, connId = connId, isSyn = isSyn, isFin = isFin, payload = payload)
+        self.state = State.OPEN
+        self.seqNum += 1
         return pkt     
 
     def hasBufferedData(self):
@@ -59,15 +61,17 @@ class Ostream:
         return None
 
     def canSendData(self):
-        ###
-        ### IMPLEMENT
-        ###
-        pass
+        if self.state == State.OPEN:
+            return True
+        else:
+            return False
+        
 
     def canSendNewData(self):
-        ###
-        ### IMPLEMENT
-        ###
+        if self.state == State.OPEN:
+            return True
+        else:
+            return False
         pass
 
     def __str__(self):

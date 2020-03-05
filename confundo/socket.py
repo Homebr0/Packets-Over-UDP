@@ -36,7 +36,7 @@ class Socket:
         '''Method that dispatches the received packet'''
         pkt = Packet().decode(buf)
         print(self.format_line("RECV", pkt))
-
+        
         self.ostream.ack(pkt.ackNum, pkt.connId)
         ###
         ### IMPLEMENT
@@ -60,7 +60,7 @@ class Socket:
 
     def connect(self, remote):
         self.remote = remote
-        self.ostream = Ostream()
+        self.ostream = Ostream(base = 42)
         
         pkt = self.ostream.makeNextPacket(connId=0, payload=b"", isSyn=True)
         self._send(pkt)
