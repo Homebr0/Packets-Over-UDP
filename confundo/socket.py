@@ -7,6 +7,7 @@ from .common import *
 from .istream import Istream
 from .ostream import Ostream, State
 from .packet import Packet
+import multiprocessing
 
 
 class Socket:
@@ -18,6 +19,8 @@ class Socket:
         self.sock.settimeout(0.5)
         self.istream = None
         self.ostream = None
+        self.closing = False
+        self.closingActReceived = False
 
     def format_line(self, command, pkt):
         s = f"{command} {pkt.seqNum} {pkt.ackNum} {pkt.connId} {int(self.ostream.cc.cwnd)} {self.ostream.cc.ssthresh}"
@@ -39,9 +42,26 @@ class Socket:
         print(self.format_line("RECV", pkt))
 
         self.ostream.ack(pkt.ackNum, pkt.connId)
-        ###
-        ### IMPLEMENT
-        ###
+
+        if self.closing:
+                if pkt.isAck and not pkt.isFin and not pkt.isSyn: #Expect packet with ACK flag
+                    self.ostream.state = State.FIN_WAIT
+                    self.closingAckReceived = True
+                elif pkt.isFin and self.closingAckReceived: #
+                    newPkt = self.ostream.makeNextPacket(self.connId, payload = b'', isAck=True)
+                    self._send(newPkt)
+                elif not pkt.isAck:
+                    print("ERROR: ACK Flag Expected")
+                else:
+                    pass #drop any other non-FIN packet
+
+        if pkt.isSyn and pkt.isAck:
+            print("SYN-ACK received")
+            self.connId = pkt.connId
+            temp = pkt.ackNum
+            self.ostream.ackNum = pkt.seqNum + 1
+            self.ostream.seqNum = temp
+
 
     def process_retransmissions(self):
 
@@ -70,12 +90,15 @@ class Socket:
         return self.ostream.canSendNewData()
 
     def send(self, payload):
-        pkt = self.ostream.makeNextPacket(self.connId, payload)
+        pkt = self.ostream.makeNextPacket(self.connId, payload, isAck=True)
         self._send(pkt)
 
     def close(self):
-        pkt = self.ostream.makeNextPacket(self.connId, payload=b"", isFin=True)
-        self._send(pkt)
+        if not self.closing:
+            pkt = self.ostream.makeNextPacket(self.connId, payload=b"", isFin=True)
+            self._send(pkt)
+        self.closing = True
+
 
     def isClosed(self):
         return self.ostream.state == State.CLOSED

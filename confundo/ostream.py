@@ -28,6 +28,7 @@ class Ostream:
         self.buf = b""
         self.state = State.INVALID
         self.nDupAcks = 0
+        self.ackNum = 0
 
     def ack(self, ackNo, connId):
         if self.state == State.INVALID:
@@ -37,12 +38,11 @@ class Ostream:
         self.lastAckTime = time.time()
         pass
 
-    def makeNextPacket(self, connId, payload, isSyn=False, isFin=False, **kwargs):
+    def makeNextPacket(self, connId, payload, isSyn=False, isFin=False, isAck = False, **kwargs):
         if self.seqNum == MAX_SEQNO:
             self.seqNum = 0
-        pkt = Packet(seqNum=self.seqNum, connId=connId, isSyn=isSyn, isFin=isFin, payload=payload)
+        pkt = Packet(seqNum=self.seqNum, ackNum = self.ackNum, connId=connId, isSyn=isSyn, isFin=isFin, payload=payload, isAck = isAck)
         self.state = State.OPEN
-        self.seqNum += 1
         return pkt
 
     def hasBufferedData(self):
