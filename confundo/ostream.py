@@ -20,7 +20,7 @@ class State(Enum):
 class Ostream:
     def __init__(self, base = 12345, isOpening = True):
         self.base = base
-        self.seqNum = base
+        self.seqNum = 42
         self.lastAckTime = time.time() # last time ACK was sent / activity timer
         self.cc = CwndControl()
         self.buf = b""
@@ -37,6 +37,8 @@ class Ostream:
         pass
 
     def makeNextPacket(self, connId, payload, isSyn=False, isFin=False, **kwargs):
+        if(self.seqNum > MAX_SEQNO):
+            self.seqNum = 0
         packet = Packet(seqNum= self.seqNum, connId = connId, payload= payload, isSyn = isSyn, isFin= isFin)
         self.seqNum += 1
         return packet

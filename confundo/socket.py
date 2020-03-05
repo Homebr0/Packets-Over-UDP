@@ -49,12 +49,10 @@ class Socket:
 
         pass
 
+    #Resend packet
     def on_timeout(self):
         '''Called every 0.5 seconds if nothing received'''
 
-        ###
-        ### IMPLEMENT
-        ###
 
         return False
 
