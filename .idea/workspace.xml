@@ -3,8 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="7b7e08d8-bdbc-4fe2-bfda-aeb808e10957" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/confundo/common.py" beforeDir="false" afterPath="$PROJECT_DIR$/confundo/common.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/confundo/cwnd_control.py" beforeDir="false" afterPath="$PROJECT_DIR$/confundo/cwnd_control.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client.py" beforeDir="false" afterPath="$PROJECT_DIR$/client.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/confundo/ostream.py" beforeDir="false" afterPath="$PROJECT_DIR$/confundo/ostream.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/confundo/socket.py" beforeDir="false" afterPath="$PROJECT_DIR$/confundo/socket.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -24,6 +24,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -39,13 +40,17 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
+    <state x="463" y="166" key="SettingsEditor" timestamp="1583521477250">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="463" y="166" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1583521477250" />
     <state x="668" y="349" key="com.intellij.ide.util.TipDialog" timestamp="1583416380351">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="668" y="349" key="com.intellij.ide.util.TipDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1583416380351" />
-    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1583510100286">
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1583519414671">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1583510100286" />
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1583519414671" />
   </component>
 </project>
