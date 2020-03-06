@@ -102,7 +102,7 @@ class Socket:
             self._send(pkt)
             self.closeTime = time.time()
         self.closing = True
-        if 2 <= (time.time() - self.closeTime):
+        if FIN_WAIT_TIME <= (time.time() - self.closeTime):
             exit(0)
             return True
 
