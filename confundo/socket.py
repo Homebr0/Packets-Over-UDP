@@ -66,9 +66,9 @@ class Socket:
 
         #Appropriately change the seqNum and AckNum only when receiving signal from server
         if pkt.isAck or pkt.isFin or pkt.isSyn:
-            temp = pkt.ackNum
+            #temp = pkt.ackNum
             self.ostream.ackNum = pkt.seqNum + 1
-            self.ostream.seqNum = temp
+            #self.ostream.seqNum = temp
 
         #Logic if closing has been initiated
         if self.closing:

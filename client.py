@@ -59,3 +59,6 @@ while True:
     if not file and conn.canSendData():
         print("Connection closing")
         conn.close()
+        break
+
+
