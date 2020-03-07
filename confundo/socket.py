@@ -46,8 +46,9 @@ class Socket:
         '''Method that dispatches the received packet'''
         pkt = Packet().decode(buf)
         print(self.format_line("RECV", pkt))
-
+        
         self.ostream.ack(pkt.ackNum, pkt.connId)
+
 
         #Logic to check if Syn-Ack has been received, completing the three-way handshake
         
@@ -95,6 +96,7 @@ class Socket:
             
 
 
+
     def process_retransmissions(self):
 
         
@@ -110,8 +112,10 @@ class Socket:
         if self.ostream.on_timeout(self.connId):
             return True
 
+
         #Reset cwnd and ssthresh values
         self.cwnd_control.on_timeout()
+
 
         return False
 
@@ -120,6 +124,7 @@ class Socket:
         self.ostream = Ostream()
         
         pkt = self.ostream.makeNextPacket(connId=0, ackNum=0, payload=b"", isSyn=True)
+
         self._send(pkt)
 
     def canSendData(self):

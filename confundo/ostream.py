@@ -32,11 +32,23 @@ class Ostream:
 
     def ack(self, ackNo, connId):
         if self.state == State.INVALID:
-            print("state is invalid")
+
+            print ("state is invalid")
+
             return None
 
         self.lastAckTime = time.time()
         pass
+
+
+    def makeNextPacket(self, connId, payload, isSyn=False, isFin=False, **kwargs):
+        if self.seqNum == MAX_SEQNO:
+            self.seqNum = 0
+        pkt = Packet(seqNum = self.seqNum, connId = connId, isSyn = isSyn, isFin = isFin, payload = payload)
+        self.state = State.OPEN
+        self.seqNum += 1
+        return pkt     
+
 
     def makeNextPacket(self, connId, payload, isSyn=False, isFin=False, isAck = False, **kwargs):
         if self.seqNum == MAX_SEQNO:
@@ -45,7 +57,7 @@ class Ostream:
         #self.seqNum += 1        
         self.state = State.OPEN
         return pkt
-
+        
     def hasBufferedData(self):
         ###
         ### IMPLEMENT
@@ -77,6 +89,7 @@ class Ostream:
             return True
         else:
             return False
+
 
     def __str__(self):
         return f"state:{self.state} base:{self.base} seqNum:{self.seqNum} nSentData:{len(self.buf)} cc:{self.cc}"

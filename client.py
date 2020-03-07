@@ -60,7 +60,7 @@ while True:
         print("Connection closing")
         conn.close()
         break
-    
+
 while True:
     try:
         
@@ -74,3 +74,4 @@ while True:
         print ("2nd socket error catch")
         sys.stderr.write("ERROR: (%s)\n" % e)
         sys.exit(1)
+
