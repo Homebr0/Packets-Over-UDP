@@ -5,3 +5,6 @@ server
 client
 *.pyc
 .vscode/settings.json
+.idea
+*.txt
+makedata.py
