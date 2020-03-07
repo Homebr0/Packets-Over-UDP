@@ -1,7 +1,7 @@
 import sys
 import argparse
 import socket
-
+import time
 import confundo
 
 parser = argparse.ArgumentParser("Parser")
@@ -60,5 +60,15 @@ while True:
         print("Connection closing")
         conn.close()
         break
+try:
+    timeoutTime = time.time()
+    while (time.time() - timeoutTime) < 20000:
+        print("test")
+        (inPacket, fromAddr) = sock.recvfrom(1024)
+        conn.on_receive(inPacket)
+        #print (inPacket.decode())
+except socket.error as e:
+    sys.stderr.write("ERROR: (%s)\n" % e)
+    sys.exit(1)
 
-
+sys.exit(0)
