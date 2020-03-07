@@ -42,6 +42,7 @@ class Ostream:
         if self.seqNum == MAX_SEQNO:
             self.seqNum = 0
         pkt = Packet(seqNum=self.seqNum, ackNum = self.ackNum, connId=connId, isSyn=isSyn, isFin=isFin, payload=payload, isAck = isAck)
+        seqNum += 1
         self.state = State.OPEN
         return pkt
 
@@ -68,12 +69,14 @@ class Ostream:
         else:
             return False
 
-    def canSendNewData(self):
-        if self.state == State.OPEN:
+    def canSendNewData(self, cwnd_control, congestionLength):
+        self.cwnd_control = cwnd_control
+        self.congestionLength = congestionLength
+        #Send only if state is open and cwnd is less than the actual congestion length
+        if self.state == State.OPEN and (self.cwnd_control.cwnd > self.congestionLength):
             return True
         else:
             return False
-        pass
 
     def __str__(self):
         return f"state:{self.state} base:{self.base} seqNum:{self.seqNum} nSentData:{len(self.buf)} cc:{self.cc}"
