@@ -28,7 +28,7 @@ class Socket:
         self.handshakeDone = False
 
     def format_line(self, command, pkt):
-        s = f"{command} {pkt.seqNum} {pkt.ackNum} {pkt.connId} {int(self.ostream.cc.cwnd)} {self.ostream.cc.ssthresh}"
+        s = f"{command} seq: {pkt.seqNum} ack: {pkt.ackNum} connID: {pkt.connId} cc: {int(self.ostream.cc.cwnd)} ssht: {self.ostream.cc.ssthresh}"
         if pkt.isAck: s = s + " ACK"
         if pkt.isSyn: s = s + " SYN"
         if pkt.isFin: s = s + " FIN"

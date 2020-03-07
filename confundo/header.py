@@ -44,7 +44,7 @@ class Header:
         self.isFin = flags & (1)
 
     def __str__(self):
-        s = f"{self.seqNum} {self.ackNum} {self.connId}"
+        s = f"seqNum={self.seqNum} ackNum={self.ackNum} connID={self.connId}"
         if self.isAck: s = s + " ACK"
         if self.isSyn: s = s + " SYN"
         if self.isFin: s = s + " FIN"
