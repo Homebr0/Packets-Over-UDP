@@ -60,18 +60,15 @@ while True:
         print("Connection closing")
         conn.close()
         break
-
+sock.settimeout(2)
 while True:
-    try:
-        
+    try:        
         (inPacket, fromAddr) = sock.recvfrom(1024)
         conn.on_receive(inPacket)
         
         if (time.time() - conn.closeTime) >= 2:
             print (time.time() - conn.closeTime)
-            exit(0)
-    except socket.error as e:          
-        print ("2nd socket error catch")
-        sys.stderr.write("ERROR: (%s)\n" % e)
-        sys.exit(1)
-
+            sys.exit(0)
+    except:
+        sys.exit(0)
+    

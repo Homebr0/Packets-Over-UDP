@@ -83,6 +83,7 @@ class Socket:
 
             elif pkt.isFin and self.closingAckReceived:  #
                 newPkt = self.ostream.makeNextPacket(self.connId, payload=b'', isAck=True)
+                print ("sending that ack of fin")
                 self._send(newPkt)
 
             elif not pkt.isAck:
