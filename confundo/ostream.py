@@ -16,9 +16,10 @@ class State(Enum):
     FIN_WAIT = 11
     CLOSED = 20
     ERROR = 21
+    LISTEN = 2
 
 class Ostream:
-    def __init__(self, base = 12345, isOpening = True):
+    def __init__(self, base = 42, isOpening = True):
         self.base = base
         self.seqNum = base
         self.lastAckTime = time.time() # last time ACK was sent / activity timer
@@ -26,21 +27,37 @@ class Ostream:
         self.buf = b""
         self.state = State.INVALID
         self.nDupAcks = 0
+        self.ackNum = 0
 
     def ack(self, ackNo, connId):
         if self.state == State.INVALID:
             return None
-
-        ###
-        ### IMPLEMENT
-        ###
+        self.seqNum = ackNo
+        if self.state == State.LISTEN:
+            self.state = State.OPEN
         pass
 
     def makeNextPacket(self, connId, payload, isSyn=False, isFin=False, **kwargs):
-        ###
-        ### IMPLEMENT
-        ###
-        pass
+        
+        if isSyn:
+            self.state = State.SYN
+            pkt = Packet(seqNum=self.seqNum, ackNum=self.ackNum , connId=connId, isSyn=isSyn, isFin=isFin, payload=payload)   
+            return pkt                
+        
+        elif self.state == State.SYN:   
+            #self.ackNum += 1         
+            pkt = Packet(seqNum=self.seqNum, ackNum=self.ackNum, connId=connId, isSyn=isSyn, isFin=isFin, isAck=True, payload=payload)
+            self.state = State.LISTEN
+            return pkt
+        
+        if not self.state == State.INVALID:
+            if self.seqNum == MAX_SEQNO:
+                self.seqNum = 0
+            #self.ackNum += 1    
+            pkt = Packet(seqNum=self.seqNum, ackNum=self.ackNum, connId=connId, isSyn=isSyn, isFin=isFin, payload=payload)
+            self.state = State.LISTEN         
+            return pkt
+                
 
     def hasBufferedData(self):
         ###
@@ -61,16 +78,15 @@ class Ostream:
         return None
 
     def canSendData(self):
-        ###
-        ### IMPLEMENT
-        ###
         pass
 
     def canSendNewData(self):
-        ###
-        ### IMPLEMENT
-        ###
+        if self.state == State.OPEN or self.state == State.SYN:
+            return True
+        else:
+            return False
         pass
+        
 
     def __str__(self):
         return f"state:{self.state} base:{self.base} seqNum:{self.seqNum} nSentData:{len(self.buf)} cc:{self.cc}"

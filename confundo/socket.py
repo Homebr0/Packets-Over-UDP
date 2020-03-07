@@ -34,12 +34,20 @@ class Socket:
 
     def on_receive(self, buf):
         '''Method that dispatches the received packet'''
-        pkt = Packet().decode(buf)
+        pkt = Packet().decode(buf)        
         print(self.format_line("RECV", pkt))
 
-        ###
-        ### IMPLEMENT
-        ###
+        #print("ACK: " + str(pkt.isAck))
+        #print("SYN: " + str(pkt.isSyn))
+        if pkt.isAck and pkt.isSyn:
+            self.connId = pkt.connId
+            self.ostream.ack(pkt.ackNum, self.connId)
+            self.ostream.ackNum = pkt.seqNum + 1            
+        elif pkt.isAck:
+           self.ostream.ack(pkt.ackNum, self.connId)
+           self.ostream.ackNum = pkt.seqNum + 1   
+
+       
 
     def process_retransmissions(self):
 

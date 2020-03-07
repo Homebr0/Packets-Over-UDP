@@ -51,6 +51,7 @@ while True:
             break
 
     while file and conn.canSendData():
+        #print ("entering file reading shit")
         data = file.read(confundo.MTU)
         if not data:
             file = None
