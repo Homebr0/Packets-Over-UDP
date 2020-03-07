@@ -46,7 +46,7 @@ class Socket:
         '''Method that dispatches the received packet'''
         pkt = Packet().decode(buf)
         print(self.format_line("RECV", pkt))
-
+        
         self.ostream.ack(pkt.ackNum, pkt.connId)
 
 
@@ -85,7 +85,7 @@ class Socket:
             else:
                 pass  # drop any other non-FIN packet
 
->>>>>>> Rebecca
+
 
     def process_retransmissions(self):
 
@@ -100,24 +100,19 @@ class Socket:
 
         if self.ostream.on_timeout(self.connId):
             return True
-<<<<<<< HEAD
-=======
+
 
         #Reset cwnd and ssthresh values
         self.cwnd_control.on_timeout()
->>>>>>> Rebecca
+
 
         return False
 
     def connect(self, remote):
         self.remote = remote
-<<<<<<< HEAD
-        self.ostream = Ostream()
-        
-=======
+
         self.ostream = Ostream(base=42)
 
->>>>>>> Rebecca
         pkt = self.ostream.makeNextPacket(connId=0, payload=b"", isSyn=True)
         self._send(pkt)
 
