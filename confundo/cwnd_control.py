@@ -8,7 +8,7 @@ class CwndControl:
     '''Interface for the congestio control actions'''
 
     def __init__(self):
-        self.cwnd = 1.0 * MTU
+        self.cwnd = 2.0 * MTU
         self.ssthresh = INIT_SSTHRESH
 
     def on_ack(self, ackedDataLen):

@@ -48,8 +48,7 @@ while True:
             # on_timout should return True on critical timeout
             sys.stderr.write("ERROR: (%s)\n" % e)
             sys.exit(1)
-        if conn.isClosed():
-            
+        if conn.isClosed():            
             break
 
     while file and conn.canSendData():

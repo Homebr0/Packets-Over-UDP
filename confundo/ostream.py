@@ -59,7 +59,7 @@ class Ostream:
             return pkt
         elif self.state == State.FIN_WAIT:
             pkt = Packet(seqNum=self.seqNum, ackNum=self.ackNum, connId=connId, isSyn=isSyn, isAck=True, isFin=isFin, payload=payload)
-            self.state = State.CLOSED
+            #self.state = State.CLOSED
             return pkt
         elif isFin:
             pkt = Packet(seqNum=self.seqNum, ackNum=self.ackNum, connId=connId, isSyn=isSyn, isFin=isFin, payload=payload)
@@ -88,11 +88,12 @@ class Ostream:
     def on_timeout(self, connId):
         diff = time.time() - self.lastAckTime
         
-        if diff > 2.0:
-            
-            if self.state == State.CLOSED:
-                sys.exit(0)
-            return True        
+        if diff > 2.0:            
+            if self.state == State.FIN_WAIT:
+                self.state = State.CLOSED
+                return False
+            return True
+        
         return False
 
     def canSendData(self):
