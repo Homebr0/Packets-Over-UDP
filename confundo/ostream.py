@@ -1,3 +1,5 @@
+# -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
 from .common import *
 from .packet import Packet
 from .cwnd_control import CwndControl
@@ -15,6 +17,7 @@ class State(Enum):
     FIN_WAIT = 11
     CLOSED = 20
     ERROR = 21
+    LISTEN = 2
 
 
 class Ostream:
@@ -29,33 +32,46 @@ class Ostream:
         self.ackNum = 0
 
     def ack(self, ackNo, connId):
-        if self.state == State.INVALID:
-
-            print ("state is invalid")
-
-            return None
-
         self.lastAckTime = time.time()
+        if self.state == State.INVALID:
+            return None
+        self.seqNum = ackNo
+        if self.state == State.LISTEN:
+            self.state = State.OPEN
+        if self.state == State.FIN:
+            self.state = State.FIN_WAIT
         pass
 
-
     def makeNextPacket(self, connId, payload, isSyn=False, isFin=False, **kwargs):
-        if self.seqNum == MAX_SEQNO:
-            self.seqNum = 0
-        pkt = Packet(seqNum = self.seqNum, connId = connId, isSyn = isSyn, isFin = isFin, payload = payload)
-        self.state = State.OPEN
-        self.seqNum += 1
-        return pkt     
+
+        if isSyn:
+            self.state = State.SYN
+            pkt = Packet(seqNum=self.seqNum, ackNum=self.ackNum, connId=connId, isSyn=isSyn, isFin=isFin,
+                         payload=payload)
+            return pkt
 
 
-    def makeNextPacket(self, connId, payload, isSyn=False, isFin=False, isAck = False, **kwargs):
-        if self.seqNum == MAX_SEQNO:
-            self.seqNum = 0
-        pkt = Packet(seqNum=self.seqNum, ackNum = self.ackNum, connId=connId, isSyn=isSyn, isFin=isFin, payload=payload, isAck = isAck)        
-        #self.seqNum += 1        
-        self.state = State.OPEN
-        return pkt
-        
+        elif self.state == State.SYN or self.state == State.FIN_WAIT:
+            # self.ackNum += 1
+            pkt = Packet(seqNum=self.seqNum, ackNum=self.ackNum, connId=connId, isSyn=isSyn, isFin=isFin, isAck=True,
+                         payload=payload)
+            self.state = State.LISTEN
+            return pkt
+
+        if isFin:
+            self.state = State.FIN
+
+
+        if not self.state == State.INVALID:
+            if self.seqNum == MAX_SEQNO:
+                self.seqNum = 0
+            # self.ackNum += 1
+            pkt = Packet(seqNum=self.seqNum, ackNum=self.ackNum, connId=connId, isSyn=isSyn, isFin=isFin,
+                         payload=payload)
+            self.state = State.LISTEN
+            return pkt
+
+
     def hasBufferedData(self):
         ###
         ### IMPLEMENT
@@ -69,25 +85,21 @@ class Ostream:
         pass
 
     def on_timeout(self, connId):
-        if 10 <= (time.time() - self.lastAckTime):
+        if GLOBAL_TIMEOUT <= (time.time() - self.lastAckTime):
             return True
+
+        self.cc.on_timeout()
         return None
 
     def canSendData(self):
-        if self.state == State.OPEN:
+        pass
+
+    def canSendNewData(self):
+        if self.state == State.OPEN or self.state == State.SYN or self.state == State.FIN_WAIT:
             return True
         else:
             return False
-
-    def canSendNewData(self, cwnd_control, congestionLength):
-        self.cwnd_control = cwnd_control
-        self.congestionLength = congestionLength
-        #Send only if state is open and cwnd is less than the actual congestion length
-        if self.state == State.OPEN and (self.cwnd_control.cwnd > self.congestionLength):
-            return True
-        else:
-            return False
-
+        pass
 
     def __str__(self):
         return f"state:{self.state} base:{self.base} seqNum:{self.seqNum} nSentData:{len(self.buf)} cc:{self.cc}"
