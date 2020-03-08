@@ -91,4 +91,4 @@ class Socket:
         self._send(pkt)
 
     def isClosed(self):
-        return self.ostream.state == State.CLOSED
+        return self.ostream.on_timeout(self.connId)

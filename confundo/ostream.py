@@ -87,10 +87,12 @@ class Ostream:
 
     def on_timeout(self, connId):
         diff = time.time() - self.lastAckTime
+        
         if diff > 2.0:
+            
             if self.state == State.CLOSED:
                 sys.exit(0)
-            return True
+            return True        
         return False
 
     def canSendData(self):

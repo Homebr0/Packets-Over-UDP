@@ -30,6 +30,7 @@ except (socket.error, OverflowError) as e:
 conn.connect(sockaddr)
 
 while True:
+    #print (".", end="")
     try:
         (inPacket, fromAddr) = sock.recvfrom(1024)
         # Note in the above, parameter to .recvfrom should be at least MTU+12 (524), but can be anything else larger if we are willing to accept larger packets
@@ -48,6 +49,7 @@ while True:
             sys.stderr.write("ERROR: (%s)\n" % e)
             sys.exit(1)
         if conn.isClosed():
+            
             break
 
     while file and conn.canSendData():
