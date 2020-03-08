@@ -12,16 +12,15 @@ class CwndControl:
         self.ssthresh = INIT_SSTHRESH
 
     def on_ack(self, ackedDataLen):
-        #slow start
-        if self.cwnd < self.ssthresh:
-            self.cwnd += 512
-        #congestion avoidance
-        elif self.cwnd >= self.ssthresh:
-            self.cwnd += (512*512)/self.cwnd
+        ###
+        ### IMPLEMENT
+        ###
+        pass
 
     def on_timeout(self):
-        self.ssthresh = self.cwnd / 2
-        self.cwnd = 512
+        ###
+        ### IMPLEMENT
+        ###
         pass
 
     def __str__(self):

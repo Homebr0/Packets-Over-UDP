@@ -56,7 +56,6 @@ class Socket:
             self._send(ackPkt)
         if self.ostream.state == State.FIN_WAIT and not pkt.isFin:
             print(self.format_line("DROP", pkt))
-
        
 
     def process_retransmissions(self):
