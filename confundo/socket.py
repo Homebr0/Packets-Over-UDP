@@ -53,6 +53,8 @@ class Socket:
         if self.ostream.state == State.FIN_WAIT and pkt.isFin:
             ackPkt = self.ostream.makeNextPacket(self.connId, payload=b"", isAck=True)
             self._send(ackPkt)
+        if self.ostream.state == State.FIN_WAIT and not pkt.isFin:
+            print(self.format_line("DROP", pkt))
 
        
 
