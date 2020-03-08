@@ -8,19 +8,20 @@ class CwndControl:
     '''Interface for the congestio control actions'''
 
     def __init__(self):
-        self.cwnd = 1.0 * MTU
+        self.cwnd = 2.0 * MTU
         self.ssthresh = INIT_SSTHRESH
 
     def on_ack(self, ackedDataLen):
-        ###
-        ### IMPLEMENT
-        ###
-        pass
+        #slow start
+        if self.cwnd < self.ssthresh:
+            self.cwnd += 512
+        #congestion avoidance
+        elif self.cwnd >= self.ssthresh:
+            self.cwnd += (512*512)/self.cwnd
 
     def on_timeout(self):
-        ###
-        ### IMPLEMENT
-        ###
+        self.ssthresh = self.cwnd / 2
+        self.cwnd = 512
         pass
 
     def __str__(self):
