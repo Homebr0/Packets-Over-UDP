@@ -88,7 +88,7 @@ class Ostream:
     def on_timeout(self, connId):
         diff = time.time() - self.lastAckTime
         
-        if diff > 2.0:            
+        if diff > 3.0:            
             if self.state == State.FIN_WAIT:
                 self.state = State.CLOSED
                 return False
