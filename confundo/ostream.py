@@ -38,16 +38,9 @@ class Ostream:
         
         if self.state == State.INVALID:
             return None
-
-        self.seqNum = ackNo        
-        if self.state == State.FIN:
-            self.state = State.FIN_WAIT
-            
-        #elif self.state == State.LISTEN:
-        #    self.state = State.OPEN
-            
-        if not self.state == State.FIN_WAIT:            
-            self.lastActTime = time.time()
+        self.seqNum = ackNo
+        if self.state == State.LISTEN:
+            self.state = State.OPEN
         pass
 
     def makeNextPacket(self, connId, payload, isSyn=False, isFin=False, **kwargs):
@@ -66,19 +59,13 @@ class Ostream:
             #self.state = State.LISTEN      
             self.state = State.OPEN          
             return pkt
-        elif self.state == State.FIN_WAIT:
-            pkt = Packet(seqNum=self.seqNum, ackNum=self.ackNum, connId=connId, isSyn=isSyn, isAck=True, isFin=isFin, payload=payload)
-            self.state = State.CLOSED
-            return pkt
-        elif isFin:
-            pkt = Packet(seqNum=self.seqNum, ackNum=self.ackNum, connId=connId, isSyn=isSyn, isFin=isFin, payload=payload)
-            self.state = State.FIN
-            return pkt
-            
-        if not self.state == State.INVALID:            
+        
+        if not self.state == State.INVALID:
+            if self.seqNum == MAX_SEQNO:
+                self.seqNum = 0
             #self.ackNum += 1    
-            pkt = Packet(seqNum=self.seqNum, ackNum=self.ackNum, connId=connId, isSyn=isSyn,isFin=isFin, payload=payload)
-            #self.state = State.LISTEN         
+            pkt = Packet(seqNum=self.seqNum, ackNum=self.ackNum, connId=connId, isSyn=isSyn, isFin=isFin, payload=payload)
+            self.state = State.LISTEN         
             return pkt
                 
 
@@ -95,20 +82,17 @@ class Ostream:
         pass
 
     def on_timeout(self, connId):
-        self.cc.on_timeout()
-        diff = time.time() - self.lastAckTime
-        if diff > 2.0:
-            if self.state == State.CLOSED:
-                sys.exit(0)
-            return True
-        return False
+        ###
+        ### IMPLEMENT
+        ###
+        return None
 
     def canSendData(self):
         pass
 
     def canSendNewData(self):
-        if (self.state == State.OPEN or self.state == State.SYN) and (self.cc.cwnd > self.congestionLength) :
-            return True        
+        if self.state == State.OPEN or self.state == State.SYN:
+            return True
         else:
             return False
         pass
