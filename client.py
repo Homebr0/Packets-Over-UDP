@@ -1,7 +1,9 @@
+#!/usr/bin/env python3
+
 import sys
 import argparse
 import socket
-import time
+
 import confundo
 
 parser = argparse.ArgumentParser("Parser")
@@ -29,12 +31,11 @@ conn.connect(sockaddr)
 
 while True:
     try:
-
         (inPacket, fromAddr) = sock.recvfrom(1024)
         # Note in the above, parameter to .recvfrom should be at least MTU+12 (524), but can be anything else larger if we are willing to accept larger packets
+
         # Process incoming packet
         conn.on_receive(inPacket)
-
 
         # Process any retransmissions
         conn.process_retransmissions()
@@ -50,27 +51,12 @@ while True:
             break
 
     while file and conn.canSendData():
-
+        #print ("entering file reading shit")
         data = file.read(confundo.MTU)
         if not data:
             file = None
             break
-
         conn.send(data)
 
     if not file and conn.canSendData():
-        #print("Connection closing")
         conn.close()
-        break
-sock.settimeout(2)
-while True:
-    try:        
-        (inPacket, fromAddr) = sock.recvfrom(1024)
-        conn.on_receive(inPacket)
-        
-        if (time.time() - conn.closeTime) >= 2:
-            print (time.time() - conn.closeTime)
-            sys.exit(0)
-    except:
-        sys.exit(0)
-    
