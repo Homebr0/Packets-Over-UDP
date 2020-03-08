@@ -21,8 +21,9 @@ class CwndControl:
         pass
 
     def on_timeout(self):
-        self.ssthresh = self.cwnd / 2
         self.cwnd = 512
+        self.ssthresh = self.cwnd / 2
+  
         pass
 
     def __str__(self):
