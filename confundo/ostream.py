@@ -56,8 +56,7 @@ class Ostream:
         elif self.state == State.SYN:   
             #self.ackNum += 1         
             pkt = Packet(seqNum=self.seqNum, ackNum=self.ackNum, connId=connId, isSyn=isSyn, isFin=isFin, isAck=True, payload=payload)
-            #self.state = State.LISTEN      
-            self.state = State.OPEN          
+            self.state = State.LISTEN
             return pkt
         
         if not self.state == State.INVALID:
