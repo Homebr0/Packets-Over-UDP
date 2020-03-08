@@ -28,20 +28,19 @@ class Ostream:
         self.state = State.INVALID
         self.nDupAcks = 0
         self.ackNum = 0
+        self.congestionLength = 0
 
     def ack(self, ackNo, connId):
+
+        dataLen = ackNo - self.seqNum
+        self.cc.on_ack( dataLen  )
+        self.congestionLength -= (dataLen)
+        
         if self.state == State.INVALID:
             return None
-
-        self.seqNum = ackNo        
-        if self.state == State.FIN:
-            self.state = State.FIN_WAIT
-            
-        elif self.state == State.LISTEN:
+        self.seqNum = ackNo
+        if self.state == State.LISTEN:
             self.state = State.OPEN
-            
-        if not self.state == State.FIN_WAIT:
-            self.lastActTime = time.time()
         pass
 
     def makeNextPacket(self, connId, payload, isSyn=False, isFin=False, **kwargs):
@@ -62,7 +61,7 @@ class Ostream:
             if self.seqNum == MAX_SEQNO:
                 self.seqNum = 0
             #self.ackNum += 1    
-            pkt = Packet(seqNum=self.seqNum, ackNum=self.ackNum, connId=connId, isSyn=isSyn,isFin=isFin, payload=payload)
+            pkt = Packet(seqNum=self.seqNum, ackNum=self.ackNum, connId=connId, isSyn=isSyn, isFin=isFin, payload=payload)
             self.state = State.LISTEN         
             return pkt
                 
@@ -80,19 +79,17 @@ class Ostream:
         pass
 
     def on_timeout(self, connId):
-        diff = time.time() - self.lastAckTime
-        if diff > 2.0:
-            if self.state == State.CLOSED:
-                sys.exit(0)
-            return True
-        return False
+        ###
+        ### IMPLEMENT
+        ###
+        return None
 
     def canSendData(self):
         pass
 
     def canSendNewData(self):
         if self.state == State.OPEN or self.state == State.SYN:
-            return True        
+            return True
         else:
             return False
         pass
