@@ -36,6 +36,7 @@ class Socket:
         '''Method that dispatches the received packet'''
         pkt = Packet().decode(buf)        
         print(self.format_line("RECV", pkt))
+        
 
         #print("ACK: " + str(pkt.isAck))
         #print("SYN: " + str(pkt.isSyn))

@@ -31,6 +31,8 @@ class Ostream:
         self.congestionLength = 0
 
     def ack(self, ackNo, connId):
+        #print("we hit ack")
+        
 
         dataLen = ackNo - self.seqNum
         self.cc.on_ack( dataLen  )
@@ -53,8 +55,9 @@ class Ostream:
     def makeNextPacket(self, connId, payload, isSyn=False, isFin=False, **kwargs):
         self.congestionLength += payload.__len__()
 
-        if self.seqNum == MAX_SEQNO:
-                self.seqNum = 0
+        if self.seqNum >= MAX_SEQNO:
+                print("Reset seqno")
+                self.seqNum = self.base
         if isSyn:
             self.state = State.SYN
             pkt = Packet(seqNum=self.seqNum, ackNum=self.ackNum , connId=connId, isSyn=isSyn, isFin=isFin, payload=payload)   
