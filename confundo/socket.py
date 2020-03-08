@@ -44,17 +44,8 @@ class Socket:
             self.ostream.ack(pkt.ackNum, self.connId)
             self.ostream.ackNum = pkt.seqNum + 1            
         elif pkt.isAck:
-            self.ostream.ack(pkt.ackNum, self.connId)
-            self.ostream.ackNum = pkt.seqNum + 1  
-        elif pkt.isFin:
-            self.ostream.ack(pkt.ackNum, self.connId)
-            self.ostream.ackNum = pkt.seqNum + 1
-        
-        if self.ostream.state == State.FIN_WAIT and pkt.isFin:
-            ackPkt = self.ostream.makeNextPacket(self.connId, payload=b"", isAck=True)
-            self._send(ackPkt)
-        if self.ostream.state == State.FIN_WAIT and not pkt.isFin:
-            print(self.format_line("DROP", pkt))
+           self.ostream.ack(pkt.ackNum, self.connId)
+           self.ostream.ackNum = pkt.seqNum + 1   
 
        
 
@@ -67,9 +58,11 @@ class Socket:
         pass
 
     def on_timeout(self):
-        '''Called every 0.5 seconds if nothing received'''        
-        if self.ostream.on_timeout(self.connId):
-            return True
+        '''Called every 0.5 seconds if nothing received'''
+
+        ###
+        ### IMPLEMENT
+        ###
 
         return False
 

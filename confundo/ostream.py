@@ -57,16 +57,10 @@ class Ostream:
             pkt = Packet(seqNum=self.seqNum, ackNum=self.ackNum, connId=connId, isSyn=isSyn, isFin=isFin, isAck=True, payload=payload)
             self.state = State.LISTEN
             return pkt
-        elif self.state == State.FIN_WAIT:
-            pkt = Packet(seqNum=self.seqNum, ackNum=self.ackNum, connId=connId, isSyn=isSyn, isAck=True, isFin=isFin, payload=payload)
-            self.state = State.CLOSED
-            return pkt
-        elif isFin:
-            pkt = Packet(seqNum=self.seqNum, ackNum=self.ackNum, connId=connId, isSyn=isSyn, isFin=isFin, payload=payload)
-            self.state = State.FIN
-            return pkt
-            
-        if not self.state == State.INVALID:            
+        
+        if not self.state == State.INVALID:
+            if self.seqNum == MAX_SEQNO:
+                self.seqNum = 0
             #self.ackNum += 1    
             pkt = Packet(seqNum=self.seqNum, ackNum=self.ackNum, connId=connId, isSyn=isSyn,isFin=isFin, payload=payload)
             self.state = State.LISTEN         
