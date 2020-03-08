@@ -28,7 +28,7 @@ class Socket:
         self.handshakeDone = False
 
     def format_line(self, command, pkt):
-        s = f"{command} seq: {pkt.seqNum} ack: {pkt.ackNum} connID: {pkt.connId} cc: {int(self.ostream.cc.cwnd)} ssht: {self.ostream.cc.ssthresh}"
+        s = f"{command} {pkt.seqNum} {pkt.ackNum} {pkt.connId} {int(self.ostream.cc.cwnd)} {self.ostream.cc.ssthresh}"
         if pkt.isAck: s = s + " ACK"
         if pkt.isSyn: s = s + " SYN"
         if pkt.isFin: s = s + " FIN"
@@ -66,9 +66,11 @@ class Socket:
 
         #Appropriately change the seqNum and AckNum only when receiving signal from server
         if pkt.isAck or pkt.isFin or pkt.isSyn:
-            temp = pkt.ackNum
-            self.ostream.ackNum = pkt.seqNum + 1
-            self.ostream.seqNum = temp
+            seqFromReceive = pkt.seqNum
+            ackFromReceive = pkt.ackNum
+            
+            self.ostream.ackNum = seqFromReceive + 1
+            self.ostream.seqNum = ackFromReceive
         
 
         #Logic if closing has been initiated
@@ -83,24 +85,22 @@ class Socket:
 
             elif pkt.isFin and self.closingAckReceived:  #
                 newPkt = self.ostream.makeNextPacket(self.connId, payload=b'', isAck=True)
-                print ("sending that ack of fin")
+                #print ("sending that ack of fin")
                 self._send(newPkt)
 
             elif not pkt.isAck:
-                print("ERROR: ACK Flag Expected")
-
+                #print("ERROR: ACK Flag Expected")
+                pass
             else:
                 pass  # drop any other non-FIN packet
             
-        elif self.closing:
-            self.sock.close()
+        
             
 
 
 
     def process_retransmissions(self):
 
-        
         ###
         ### IMPLEMENT
         ###

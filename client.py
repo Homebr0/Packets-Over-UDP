@@ -34,6 +34,8 @@ while True:
         # Note in the above, parameter to .recvfrom should be at least MTU+12 (524), but can be anything else larger if we are willing to accept larger packets
         # Process incoming packet
         conn.on_receive(inPacket)
+
+
         # Process any retransmissions
         conn.process_retransmissions()
 
@@ -57,7 +59,7 @@ while True:
         conn.send(data)
 
     if not file and conn.canSendData():
-        print("Connection closing")
+        #print("Connection closing")
         conn.close()
         break
 sock.settimeout(2)

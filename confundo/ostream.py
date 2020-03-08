@@ -41,15 +41,6 @@ class Ostream:
         pass
 
 
-    def makeNextPacket(self, connId, payload, isSyn=False, isFin=False, **kwargs):
-        if self.seqNum == MAX_SEQNO:
-            self.seqNum = 0
-        pkt = Packet(seqNum = self.seqNum, connId = connId, isSyn = isSyn, isFin = isFin, payload = payload)
-        self.state = State.OPEN
-        self.seqNum += 1
-        return pkt     
-
-
     def makeNextPacket(self, connId, payload, isSyn=False, isFin=False, isAck = False, **kwargs):
         if self.seqNum == MAX_SEQNO:
             self.seqNum = 0
