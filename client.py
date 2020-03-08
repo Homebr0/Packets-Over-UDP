@@ -1,7 +1,7 @@
 import sys
 import argparse
 import socket
-
+import time
 import confundo
 
 parser = argparse.ArgumentParser("Parser")
@@ -59,3 +59,15 @@ while True:
     if not file and conn.canSendData():
         print("Connection closing")
         conn.close()
+        break
+sock.settimeout(2)
+while True:
+    try:        
+        (inPacket, fromAddr) = sock.recvfrom(1024)
+        conn.on_receive(inPacket)
+        
+        if (time.time() - conn.closeTime) >= 2:
+            print (time.time() - conn.closeTime)
+            sys.exit(0)
+    except:
+        sys.exit(0)

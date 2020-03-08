@@ -1,5 +1,3 @@
-# -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
-
 import sys
 import sys
 import time
@@ -46,19 +44,19 @@ class Socket:
         '''Method that dispatches the received packet'''
         pkt = Packet().decode(buf)
         print(self.format_line("RECV", pkt))
-
+        
         self.ostream.ack(pkt.ackNum, pkt.connId)
 
+
         #Logic to check if Syn-Ack has been received, completing the three-way handshake
+        
         if not self.handshakeDone and pkt.isSyn and pkt.isAck:
             self.connId = pkt.connId
-        elif self.handshakeDone:
-            pass
-        else:
+        elif not self.handshakeDone:            
             print("SYN-ACK Expected")
 
         #Changes cwnd and ssthresh values depending on ack received
-        if pkt.isAck and not pkt.isSyn and not pkt.isFin:
+        if not self.closing and pkt.isAck and not pkt.isSyn and not pkt.isFin:
             dataLen = pkt.ackNum - self.ostream.seqNum
             self.cwnd_control.on_ack( dataLen  )
             #Remove length of previous packet from the congestion length
@@ -66,27 +64,41 @@ class Socket:
 
         #Appropriately change the seqNum and AckNum only when receiving signal from server
         if pkt.isAck or pkt.isFin or pkt.isSyn:
-            temp = pkt.ackNum
+            #temp = pkt.ackNum
             self.ostream.ackNum = pkt.seqNum + 1
-            self.ostream.seqNum = temp
+            #self.ostream.seqNum = temp
+        
 
         #Logic if closing has been initiated
         if self.closing:
+
             if pkt.isAck and not pkt.isFin and not pkt.isSyn:  # Expect packet with ACK flag
+                self.closeTime = time.time()
+                
                 self.ostream.state = State.FIN_WAIT
-                self.closingAckReceived = True
-                return None
+                self.closingAckReceived = True 
+                pass
+
             elif pkt.isFin and self.closingAckReceived:  #
                 newPkt = self.ostream.makeNextPacket(self.connId, payload=b'', isAck=True)
+                print ("sending that ack of fin")
                 self._send(newPkt)
+
             elif not pkt.isAck:
                 print("ERROR: ACK Flag Expected")
+
             else:
                 pass  # drop any other non-FIN packet
+            
+        elif self.closing:
+            self.sock.close()
+            
+
 
 
     def process_retransmissions(self):
 
+        
         ###
         ### IMPLEMENT
         ###
@@ -99,16 +111,19 @@ class Socket:
         if self.ostream.on_timeout(self.connId):
             return True
 
+
         #Reset cwnd and ssthresh values
         self.cwnd_control.on_timeout()
+
 
         return False
 
     def connect(self, remote):
         self.remote = remote
-        self.ostream = Ostream(base=42)
+        self.ostream = Ostream()
+        
+        pkt = self.ostream.makeNextPacket(connId=0, ackNum=0, payload=b"", isSyn=True)
 
-        pkt = self.ostream.makeNextPacket(connId=0, payload=b"", isSyn=True)
         self._send(pkt)
 
     def canSendData(self):
@@ -117,20 +132,16 @@ class Socket:
     def send(self, payload):
         if not self.handshakeDone:
             pkt = self.ostream.makeNextPacket(self.connId, payload, isAck= True)
-            self.handshakeDone = True
+            self.handshakeDone = True            
         else:
-            pkt = self.ostream.makeNextPacket(self.connId, payload)
+            pkt = self.ostream.makeNextPacket(self.connId, payload, isAck= False)            
         self._send(pkt)
 
     def close(self):
         if not self.closing:
             pkt = self.ostream.makeNextPacket(self.connId, payload=b"", isFin=True)
-            self._send(pkt)
-            self.closeTime = time.time()
-        self.closing = True
-        if 2 <= (time.time() - self.closeTime):
-            exit(0)
-            return True
+            self._send(pkt)            
+        self.closing = True        
 
     def isClosed(self):
         return self.ostream.state == State.CLOSED
