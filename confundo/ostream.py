@@ -30,16 +30,11 @@ class Ostream:
         self.ackNum = 0
 
     def ack(self, ackNo, connId):
-<<<<<<< HEAD
-        #print("we hit ack")
-        
 
         dataLen = ackNo - self.seqNum
-        self.cc.on_ack( dataLen  )
-        self.congestionLength -= (dataLen)
+
+        self.cc.on_ack(dataLen)
         
-=======
->>>>>>> 8fdc3a4a610477113ec1066a563ae8fcb44aa3a1
         if self.state == State.INVALID:
             return None
 
@@ -55,16 +50,8 @@ class Ostream:
         pass
 
     def makeNextPacket(self, connId, payload, isSyn=False, isFin=False, **kwargs):
-<<<<<<< HEAD
-        self.congestionLength += payload.__len__()
-
-        if self.seqNum >= MAX_SEQNO:
-                print("Reset seqno")
-                self.seqNum = self.base
-=======
         if self.seqNum == MAX_SEQNO:
                 self.seqNum = 0
->>>>>>> 8fdc3a4a610477113ec1066a563ae8fcb44aa3a1
         if isSyn:
             self.state = State.SYN
             pkt = Packet(seqNum=self.seqNum, ackNum=self.ackNum , connId=connId, isSyn=isSyn, isFin=isFin, payload=payload)   
@@ -105,7 +92,7 @@ class Ostream:
 
     def on_timeout(self, connId):
         diff = time.time() - self.lastAckTime
-        
+        self.cc.on_timeout()
         if diff > 3.0:            
             if self.state == State.FIN_WAIT:
                 self.state = State.CLOSED
